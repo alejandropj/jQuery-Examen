@@ -41,7 +41,8 @@
       </nav>
 
       <div>
-        <h1>Bienvenido a Home</h1>
+        <h1>Bienvenido a Personajes de la serie</h1>
+        <div id="cajaPersonajes"></div>
       </div>
 
 
@@ -53,6 +54,7 @@
             const url = "https://apiseriespersonajes.azurewebsites.net/";
 
             loadSeries();
+            loadPersonajes();
 
             function loadSeries(){
                 var desplegable = $("#desplegableSeries");
@@ -63,7 +65,7 @@
                     "method":"GET",
                     "dataType":"json",
                     success: function(data){
-                        console.log(data)
+                        //console.log(data)
                         $.each(data, function(i,serie){
                             var idSerie = serie.idSerie;
                             var nombre = serie.nombre;
@@ -77,6 +79,51 @@
                 })
             }
 
+            function loadPersonajes(){
+                var idSerie = parseInt(location.search.split("=")[1]);
+                var request = "api/Series/PersonajesSerie/"+idSerie;
+                var html = 
+                "<a class='btn btn-warning' href='serie.html?serie="+idSerie+"'>Volver a Detalle Serie</a>"+
+                "<table class='table table-success table-striped'>"+
+                                "<thead>"+
+                                    "<tr>"+
+                                        "<th scope='col'>Personaje</th>"+
+                                        "<th scope='col'>Imagen</th>"+
+
+                                    "</tr>"+
+                                "</thead>"+
+                                "<tbody>";
+                $.ajax({
+                    "url": url+request,
+                    "method":"GET",
+                    "dataType":"json",
+                    success: function(data){
+                        //console.log(data);
+                        $.each(data,function(i,personaje){
+                            //var idPersonaje = personaje.idPersonaje;
+                            var nombre = personaje.nombre;
+                            var imagen = personaje.imagen;
+                            //var idSerie = personaje.idSerie;
+
+                            html += 
+                                    "<tr>"+
+                                        "<td>"+nombre+"</td>"+
+                                        "<td><img style='width:150px;height:150px' src='"+imagen+"'/></td>"+
+                                    "</tr>";
+
+                        });
+                        html += 
+                        "</tbody>"+
+                            "</table>";
+                        
+                        //console.log(data);
+                        //
+                    $("#cajaPersonajes").html(html);
+                    }
+                })
+
+                
+            }
         })
 
 

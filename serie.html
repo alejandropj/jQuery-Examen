@@ -41,7 +41,8 @@
       </nav>
 
       <div>
-        <h1>Bienvenido a Home</h1>
+        <h1>Bienvenido a Detalle Serie</h1>
+        <div id="cajaSerie"></div>
       </div>
 
 
@@ -53,6 +54,7 @@
             const url = "https://apiseriespersonajes.azurewebsites.net/";
 
             loadSeries();
+            loadSerie();
 
             function loadSeries(){
                 var desplegable = $("#desplegableSeries");
@@ -63,7 +65,7 @@
                     "method":"GET",
                     "dataType":"json",
                     success: function(data){
-                        console.log(data)
+                        //console.log(data)
                         $.each(data, function(i,serie){
                             var idSerie = serie.idSerie;
                             var nombre = serie.nombre;
@@ -77,6 +79,37 @@
                 })
             }
 
+            function loadSerie(){
+                var idSerie = parseInt(location.search.split("=")[1]);
+                var request = "api/Series/"+idSerie;
+                //console.log(idSerie);
+                $.ajax({
+                    "url": url+request,
+                    "method":"GET",
+                    "dataType":"json",
+                    success: function(data){
+                        var idSerie = data.idSerie;
+                        var nombre = data.nombre;
+                        var imagen = data.imagen;
+                        var puntuacion = data.puntuacion;
+                        var anyo = data.anyo;
+                        //console.log(data);
+                        var html = 
+                    "<div class='card' style='width: 18rem;'>"+
+                    "<img src='"+imagen+"' class='card-img-top' alt='Imagen de Serie'>"+
+                        "<div class='card-body'>"+
+                            "<h5 class='card-title'>"+nombre+"</h5>"+
+                            "<p class='card-text'>Nota: "+puntuacion+"</p>"+
+                            "<p class='card-text'>Año: "+anyo+"</p>"+
+                            "<a href='personajes.html?idSerie="+idSerie+"' class='btn btn-primary'>Ver personajes</a>"+
+                        "</div>"+
+                    "</div>";
+                    $("#cajaSerie").html(html);
+                    }
+                })
+
+                
+            }
         })
 
 
