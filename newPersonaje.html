@@ -16,10 +16,10 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                <a class="nav-link" href="index.html">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="newPersonaje.html">Nuevo personaje</a>
+                <a class="nav-link active" aria-current="page" href="newPersonaje.html">Nuevo personaje</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="modifyPersonaje.html">Modificar personajes</a>
@@ -106,7 +106,7 @@
                     personaje.idPersonaje = 22;
                     personaje.nombre = cajaNombre;
                     personaje.imagen = cajaImagen;
-                    personaje.idSerie = cajaSerie;
+                    personaje.idSerie = parseInt(cajaSerie);
                     console.log(personaje);
                     
                     var dataJson = JSON.stringify(personaje);
@@ -120,7 +120,7 @@
                         "data": dataJson,
                         success: function(){
                             alert("Insertado con éxito.");
-                            //$(location).prop('href', 'index.html');
+                            $(location).prop('href', 'personajes.html?idSerie='+cajaSerie);
                         }
                     })
 

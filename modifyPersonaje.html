@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Series Alejandro</title>
+    <link rel="stylesheet" href="./css/bootstrap.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="index.html">Inicio</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link" href="index.html">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="newPersonaje.html">Nuevo personaje</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="modifyPersonaje.html">Modificar personajes</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Series
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="desplegableSeries">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#">Something else here</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <div>
+        <h1>Modificar personaje/serie</h1>
+
+        <label>Seleccione serie: </label>
+        <select id="cajaSerie">
+            <option value="volvo">Volvo</option>
+            <option value="saab">Saab</option>
+            <option value="opel">Opel</option>
+            <option value="audi">Audi</option>
+        </select>
+        <br>
+        <label>Seleccione personaje: </label>
+        <select id="cajaPersonajes">
+            <option value="volvo">Volvo</option>
+            <option value="saab">Saab</option>
+            <option value="opel">Opel</option>
+            <option value="audi">Audi</option>
+        </select>
+        <br>
+        <button class="btn btn-primary" id="botonUpdate">Actualizar</button>
+      </div>
+      <div id="cajaImagenSerie"></div>
+      <div id="cajaImagenPersonaje"></div>
+
+
+      <script src="./Librerias/jquery-3.7.1.min.js"></script>
+      <script src="./Librerias/bootstrap.js"></script>
+      <script src="./Librerias/bootstrap.bundle.js"></script>
+      <script>
+        $(document).ready(function(){
+            const url = "https://apiseriespersonajes.azurewebsites.net/";
+
+            loadSeries();
+            loadPersonajes();
+            updatePersonajeSerie();
+            updateImage();
+            
+
+            function loadSeries(){
+                var desplegable = $("#desplegableSeries");
+                var cajaSerie = $("#cajaSerie");
+                var request = "api/Series";
+                var html = "";
+                var htmlSelect = "";
+                $.ajax({
+                    "url": url+request,
+                    "method":"GET",
+                    "dataType":"json",
+                    success: function(data){
+                        console.log(data)
+                        $.each(data, function(i,serie){
+                            var idSerie = serie.idSerie;
+                            var nombre = serie.nombre;
+                            //<li><a class="dropdown-item" href="#">Action</a></li>
+                            html += "<li><a class='dropdown-item' href='"+ "serie.html?serie="+ idSerie +"'>"+nombre+"</a></li>";
+                            //<option value="volvo">Volvo</option>
+                            htmlSelect += "<option value='"+idSerie+"'>"+nombre+"</option>";
+                        });
+                        $(desplegable).html(html);
+                        $(cajaSerie).html(htmlSelect);
+                    }
+                })
+            }
+
+
+            function loadPersonajes(){
+                var cajaPersonajes = $("#cajaPersonajes");
+                var request = "api/Personajes";
+                var html = "";
+                $.ajax({
+                    "url": url+request,
+                    "method":"GET",
+                    "dataType":"json",
+                    success: function(data){
+                        console.log(data)
+                        $.each(data, function(i,personaje){
+                            var idPersonaje = personaje.idPersonaje;
+                            var nombre = personaje.nombre;
+                            //<option value="volvo">Volvo</option>
+                            html += "<option value='"+idPersonaje+"'>"+nombre+"</option>";
+                        });
+                        $(cajaPersonajes).html(html);
+                    }
+                })
+            }
+
+            function updatePersonajeSerie(){
+                $("#botonUpdate").click(function(){
+                    var cajaSerie = $("#cajaSerie").children("option:selected").val();
+                    var cajaPersonajes = $("#cajaPersonajes").children("option:selected").val();
+                    
+                    var request = "api/Personajes/"+cajaPersonajes+"/"+cajaSerie;
+                    console.log(request);
+
+                    $.ajax({
+                        "url":url+request,
+                        "method": "PUT",
+                        success: function(){
+                            alert("Actualizado con éxito.");
+                            $(location).prop('href', 'personajes.html?idSerie='+cajaSerie);
+                        }
+                    })
+
+                })
+                
+            }
+
+            function updateImage(){
+                $("#cajaSerie").change(function(){
+                    var cajaSerie = $("#cajaSerie").children("option:selected").val();
+                    var request = "api/Series/"+cajaSerie;
+                    var html= "";
+                    $.ajax({
+                    "url": url+request,
+                    "method":"GET",
+                    "dataType":"json",
+                    success: function(data){
+                        console.log(data);
+                            var imagen = data.imagen;
+                            var nombre = data.nombre;
+                            html += "<h1>"+nombre+"</h1>"
+                            html += "<img src='"+imagen+"' style='width:150px;height:150px'/>";
+                            $("#cajaImagenSerie").html(html);
+                    }
+                })
+                });
+
+
+                $("#cajaPersonajes").change(function(){
+                    var cajaPersonajes = $("#cajaPersonajes").children("option:selected").val();
+                    var request = "api/Personajes/"+cajaPersonajes;
+                    var html= "";
+                    $.ajax({
+                    "url": url+request,
+                    "method":"GET",
+                    "dataType":"json",
+                    success: function(data){
+                        console.log(data);
+                            var imagen = data.imagen;
+                            var nombre = data.nombre;
+                            html += "<h1>"+nombre+"</h1>"
+                            html += "<img src='"+imagen+"' style='width:150px;height:150px'/>";
+                            $("#cajaImagenPersonaje").html(html);
+                    }
+                })
+                });
+            }
+        })
+            
+
+
+      </script>
+</body>
+</html>
